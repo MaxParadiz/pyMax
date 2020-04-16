@@ -10,6 +10,14 @@ def join_spectra( data_sets ):
     return 0
 
 
+def removeScan( data, scans):
+    if scans == None:
+        return data
+    data['nscans'] = data['nscans'] - len(scans)
+    data['dA'] = np.delete(data['dA'], scans,2)
+    data['dA_err'] = np.delete(data['dA_err'], scans,2)
+    return data
+
 def cutData( data, xmin, xmax, tmin, tmax):
     xmask = (data['x'] >= xmin) * (data['x'] <= xmax)
     tmask = (data['delays'] >= tmin) * (data['delays'] <= tmax)
