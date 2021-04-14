@@ -43,7 +43,7 @@ def residuals_floppy_baseshift(G,data, kr,phi,nComponents,scan=False, average=Fa
 
 
 
-def residuals_sequential(G,data,kr,phi,nComponents,scan=False, average=False):
+def residuals_sequential(G,data,kr,phi,nComponents,scan=None, average=False):
      time = data['delays']
      npixels = data['npixels']
      W = G[:npixels*nComponents].reshape(npixels,nComponents)
@@ -51,14 +51,14 @@ def residuals_sequential(G,data,kr,phi,nComponents,scan=False, average=False):
      k1 = K[0]
      knr = K[1]
      y = np.dot(W,np.vstack([np.squeeze(KModels.Sequential(time,k1,kr,knr,1.0,0.0))])) 
-     if scan != False:
+     if scan != None:
          return ((y[:,:] - data['dA'][:,:,scan])).flatten()
      elif average == False:
          return ((y[:,:,None] - data['dA'][:,:,:])).flatten()
      else:
          return ((y[:,:] - np.average(data['dA'],axis=2))).flatten()
 
-def residuals_sequential_baseshift(G,data,kr,phi,nComponents,scan=False, average=False):
+def residuals_sequential_baseshift(G,data,kr,phi,nComponents,scan=None, average=False):
      time = data['delays']
      npixels = data['npixels']
      W = G[:npixels*nComponents].reshape(npixels,nComponents)
@@ -66,7 +66,7 @@ def residuals_sequential_baseshift(G,data,kr,phi,nComponents,scan=False, average
      k1 = K[0]
      knr = K[1]
      y = np.dot(W,np.vstack([np.squeeze(KModels.Sequential(time,k1,kr,knr,1.0,0.0)),np.ones(len(time))])) 
-     if scan != False:
+     if scan != None:
          return ((y[:,:] - data['dA'][:,:,scan])).flatten()
      elif average == False:
          return ((y[:,:,None] - data['dA'][:,:,:])).flatten()
@@ -76,7 +76,7 @@ def residuals_sequential_baseshift(G,data,kr,phi,nComponents,scan=False, average
 
 
 
-def fit( model, data, GSAS=False, K0 = [0.1,0.02], scan=False, average=False,kr = 0.00014, nComponents =2, phi=1):
+def fit( model, data, GSAS=False, K0 = [0.1,0.02], scan=None, average=False,kr = 0.00014, nComponents =2, phi=1):
     residuals = {'FloppyRotor': residuals_floppy,'Sequential': residuals_sequential,
                  'SequentialB': residuals_sequential_baseshift,
                  'FloppyRotorB': residuals_floppy_baseshift}
@@ -118,4 +118,5 @@ def procFit( data, res_lsq, nComponents=2):
     for c in range(nComponents):
         data['SAS'][c] = W[:,c]
     data['K'] = G[npixels*nComponents:]
+    data['result'] = res_lsq
     return data

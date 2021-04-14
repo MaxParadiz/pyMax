@@ -32,7 +32,7 @@ def processScans(filename, nscans):
 
 
 def getPixelArray(grating, centerwave, centerpix, npix):
-    reciprocal_dispersion_list = {'150 lines/mm':25.8,'75 lines/mm': 51.7}      # reciprocal dispersion in nm/mm
+    reciprocal_dispersion_list = {'150 lines/mm':27.08,'75 lines/mm': 51.7}      # Manual: 25.8, 51.7 reciprocal dispersion in nm/mm
     reciprocal_dispersion = reciprocal_dispersion_list[grating]
     array = (np.linspace(1,npix,npix)-centerpix)                                    # Center pixel becomes '0' in the 32-element array
     array = 0.5 * array                                                         # Each pixel center is separated by 0.5 mm

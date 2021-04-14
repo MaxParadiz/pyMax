@@ -1,5 +1,6 @@
 from sympy import *
 import numpy as np
+import scipy.special
 
 
 
@@ -34,6 +35,23 @@ def rawSequential():
     return Ct
 
 
+def rawBranching():
+c,w,k,kr,k1,k2,k3,f1,f2 = symbols('c w k kr k1 k2 k3 f1 f2')
+time = symbols('time')
+S1,T1,X = symbols('S1 T1 X')
+sdel = w/(2*sqrt(2*ln(2)))
+gdconv = 0.5*exp(-k*time)*exp(k*(c+0.5*(k*sdel**2)))*(1+erf((time-(c+k*sdel**2))/(sqrt(2)*sdel)))
+KineticModel = Matrix([
+                      [-(kr+(f1+f2)*k1)   ,  0  ,   0  ],
+                      [f1*k1              ,  k2 ,   0  ],
+                      [f2*k1              ,   0 ,  k3  ]
+                                          ])
+C0 = Matrix([1,0,0])
+EigenVectors, EigenValues = KineticModel.diagonalize()
+Ct = EigenVectors@exp(EigenValues*time)@(EigenVectors**-1)@C
+Ct = EigenVectors@(diag(*(EigenVectors**-1@C0)))@Matrix([gdconv.subs(k,ki) for ki in [-(kr+(f1+f2)*k1),k2,k3]])
+Ct = lambdify(time,c,w,kr,k1,k2,k3,f1,f2)
+return Ct
 
 
 

@@ -7,8 +7,17 @@ def remove_background( data , delays=1):
 
 
 def join_spectra( data_sets ):
-    return 0
-
+    if len( data_sets ) == 1:
+        return 0
+    linked = {}
+    linked['data_sets'] = data_sets
+    linked['x'] = np.concatenate([data['x'] for data in data_sets])
+    linked['delays'] = np.concatenate([data['delays'] for data in data_sets])
+    linked['dA'] = np.concatenate([np.average(data['dA'], axis=2) for data in data_sets])[linked['x'].argsort()]
+    linked['dA_err'] = np.concatenate([np.std(data['dA'], axis=2) for data in data_sets])[linked['x'].argsort()]
+    linked['npixels'] = len(linked['x'])
+    linked['x'] = np.sort(linked['x'])
+    return linked
 
 def removeScan( data, scans):
     if scans == None:
